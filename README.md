@@ -1,0 +1,133 @@
+set nocompatible              " required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+
+" Add all your plugins here (note older versions of Vundle used Bundle instead of Plugin)
+Bundle 'Valloric/YouCompleteMe'
+Plugin 'scrooloose/nerdtree' | Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'scrooloose/syntastic'
+Plugin 'hynek/vim-python-pep8-indent'
+" 状态栏
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+" " 配色
+Plugin 'altercation/vim-colors-solarized'
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+"#################### 基础设置 ###################### 
+set encoding=utf-8 
+let mapleader = ','          " 修改leader键
+let g:mapleader = ','
+
+set guifont=Courier_New:h16
+set guifontwide=STXihei:h16
+set number                   " 显示行号
+set nowrap                   " 取消换行
+
+"============== 快速进入命令模式==============
+nnoremap ; :
+
+"================== NERDTree =================
+let g:NERDTreeMapOpenSplit = 's'
+let g:NERDTreeMapOpenVSplit = 'v'
+nmap <leader>n :NERDTreeToggle<CR>
+let NERDTreeWinSize=30
+let NERDTreeIgnore=['\.pyc', '\.swp', '\~']
+" 是否自动开启nerdtree
+let g:nerdtree_tabs_open_on_console_startup=1
+let g:nerdtree_tabs_open_on_gui_startup=1
+"close vim if the only window left open is a NERDTree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end  
+
+"==================== YCM=====================
+let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+
+let g:ycm_key_list_select_completion = ['<Down>']
+let g:ycm_key_list_previous_completion = ['<Up>']
+let g:ycm_complete_in_comments = 1  "在注释输入中也能补全
+let g:ycm_complete_in_strings = 1   "在字符串输入中也能补全
+let g:ycm_use_ultisnips_completer = 1 "提示UltiSnips
+let g:ycm_collect_identifiers_from_comments_and_strings = 1   "注释和字符串中的文字也会被收入补全
+let g:ycm_collect_identifiers_from_tags_files = 1
+" 开启语法关键字补全
+let g:ycm_seed_identifiers_with_syntax=1
+" 回车作为选中
+let g:ycm_key_list_stop_completion = ['<CR>']
+
+" 跳转到定义处, 分屏打开
+let g:ycm_goto_buffer_command = 'horizontal-split'
+let g:ycm_register_as_syntastic_checker = 0
+" nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
+
+" 引入，可以补全系统，以及python的第三方包 针对新老版本YCM做了兼容
+" old version
+if !empty(glob("~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"))
+	let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"
+endif
+" new version
+if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"))
+	let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
+    endif
+
+"==================== PEP8 =====================
+let g:syntastic_python_checkers=['flake8']
+let g:syntastic_python_checker_args='--ignore=W501,E225'
+let syntastic_python_checker_args='--ignore=E501,E225'
+let g:syntastic_check_on_open=1                                                                                                                                                                         
+let g:syntastic_check_on_wq=0                                                                                                                                                                           
+let g:syntastic_enable_highlighting=1     
+
+"=================== 窗口切换 ==================
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+"=================== 搜索相关 ==================
+" 进入搜索Use sane regexes"                                                                                                                                                                           
+nnoremap / /\v
+vnoremap / /\v
+
+" 设置文内智能搜索提示
+" 高亮search命中的文本
+set hlsearch
+" 打开增量搜索模式,随着键入即时搜索
+set incsearch
+" 搜索时忽略大小写
+set ignorecase
+
+"================== 状态栏配置 =================
+
+" airline {{{
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+let g:airline_left_sep = '▶'
+let g:airline_left_alt_sep = '❯'
+let g:airline_right_sep = '◀'
+let g:airline_right_alt_sep = '❮'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+
+
+" solarized {{{
+let g:solarized_termtrans=1
+let g:solarized_contrast="normal"
+let g:solarized_visibility="normal"
+" let g:solarized_termcolors=256
+" }}}
+syntax enable
+set background=dark
+colorscheme solarized
