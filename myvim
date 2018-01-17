@@ -14,6 +14,8 @@ Plugin 'gmarik/Vundle.vim'
 " Add all your plugins here (note older versions of Vundle used Bundle instead of Plugin)
 Bundle 'Valloric/YouCompleteMe'
 Plugin 'scrooloose/nerdtree' | Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'tpope/vim-fugitive'
+Plugin 'kien/ctrlp.vim'
 Plugin 'scrooloose/syntastic'
 Plugin 'hynek/vim-python-pep8-indent'
 " 状态栏
@@ -31,8 +33,14 @@ let g:mapleader = ','
 
 set guifont=Courier_New:h16
 set guifontwide=STXihei:h16
+set expandtab smarttab shiftwidth=4 tabstop=4
 set number                   " 显示行号
 set nowrap                   " 取消换行
+nnoremap U <C-r>
+
+"禁止生成临时文件
+set nobackup
+set noswapfile
 
 "============== 快速进入命令模式==============
 nnoremap ; :
@@ -81,8 +89,17 @@ if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_
 	let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
     endif
 
+"==================== ctrlp =====================
+"设置搜索时忽略的文件
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
+    \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
+    \ }
+
 "==================== PEP8 =====================
 let g:syntastic_python_checkers=['flake8']
+" let g:syntastic_python_checker_args='--ignore=W501,E225'
+" let syntastic_python_checker_args='--ignore=E501,E225'
 let g:syntastic_python_flake8_post_args='--ignore=E501,E128,E225'
 let g:syntastic_check_on_open=1                                                                                                                                                                         
 let g:syntastic_check_on_wq=0                                                                                                                                                                           
@@ -109,7 +126,8 @@ set ignorecase
 
 "================== 状态栏配置 =================
 
-" airline {{{
+" airline 
+
 if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
