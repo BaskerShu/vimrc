@@ -7,6 +7,8 @@ call vundle#begin()
 
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
+let g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_save_on_switch = 1
 
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
@@ -18,6 +20,8 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'kien/ctrlp.vim'
 Plugin 'scrooloose/syntastic'
 Plugin 'hynek/vim-python-pep8-indent'
+" 代码注释
+Plugin 'tpope/vim-commentary'
 " 状态栏
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -37,6 +41,10 @@ set expandtab smarttab shiftwidth=4 tabstop=4
 set number                   " 显示行号
 set nowrap                   " 取消换行
 nnoremap U <C-r>
+noremap H ^
+noremap L $
+nnoremap oo o<ESC>
+vmap <C-c> "+y               " 从vim复制到系统
 
 "禁止生成临时文件
 set nobackup
@@ -52,8 +60,8 @@ nmap <leader>n :NERDTreeToggle<CR>
 let NERDTreeWinSize=30
 let NERDTreeIgnore=['\.pyc', '\.swp', '\~']
 " 是否自动开启nerdtree
-let g:nerdtree_tabs_open_on_console_startup=1
-let g:nerdtree_tabs_open_on_gui_startup=1
+" let g:nerdtree_tabs_open_on_console_startup=1
+" let g:nerdtree_tabs_open_on_gui_startup=1
 "close vim if the only window left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end  
 
@@ -89,12 +97,19 @@ if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_
 	let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
     endif
 
+"================== vim-commentary =================
+"为python和shell等添加注释
+autocmd FileType python,shell,coffee set commentstring=#\ %s
+"修改注释风格
+autocmd FileType java,c,cpp set commentstring=//\ %s
+
 "==================== ctrlp =====================
 "设置搜索时忽略的文件
 let g:ctrlp_custom_ignore = {
     \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
     \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
     \ }
+let g:ctrlp_max_files=0
 
 "==================== PEP8 =====================
 let g:syntastic_python_checkers=['flake8']
