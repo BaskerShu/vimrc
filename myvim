@@ -6,7 +6,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 " alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+" call vundle#begin('~/some/path/here')
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 
@@ -15,7 +15,8 @@ Plugin 'gmarik/Vundle.vim'
 
 " Add all your plugins here (note older versions of Vundle used Bundle instead of Plugin)
 Bundle 'Valloric/YouCompleteMe'
-Plugin 'scrooloose/nerdtree' | Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'scrooloose/nerdtree' | Plugin 'jistr/vim-nerdtree-tabs' | Plugin 'Xuyuanp/nerdtree-git-plugin'
+
 Plugin 'tpope/vim-fugitive'
 Plugin 'kien/ctrlp.vim'
 Plugin 'scrooloose/syntastic'
@@ -25,48 +26,87 @@ Plugin 'tpope/vim-commentary'
 " 状态栏
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-" " 配色
+" 配色
 Plugin 'altercation/vim-colors-solarized'
+" capslock
+" Plugin 'https://github.com/tpope/vim-capslock.git'
+" Plugin 'suxpert/vimcaps'
+" 代码折叠
+" Plugin 'tmhedberg/SimpylFold'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
-"#################### 基础设置 ###################### 
+
+" #################### 基础设置 ###################### 
 set encoding=utf-8 
 let mapleader = ','          " 修改leader键
 let g:mapleader = ','
 
-set guifont=Courier_New:h16
-set guifontwide=STXihei:h16
 set expandtab smarttab shiftwidth=4 tabstop=4
 set number                   " 显示行号
-set nowrap                   " 取消换行
+set wrap                     " 取消换行
 nnoremap U <C-r>
 noremap H ^
 noremap L $
-nnoremap oo o<ESC>
+nnoremap <leader>o oimport ipdb; ipdb.sset_trace()<Esc>
 vmap <C-c> "+y               " 从vim复制到系统
 
-"禁止生成临时文件
+" 禁止生成临时文件
 set nobackup
 set noswapfile
 
-"============== 快速进入命令模式==============
-nnoremap ; :
+" tab切换指令
+" Go to tab by number
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+noremap <leader>6 6gt
+noremap <leader>7 7gt
+noremap <leader>8 8gt
+noremap <leader>9 9gt
+noremap <leader>0 :tablast<cr>
 
-"================== NERDTree =================
+" ex命令自动补全
+set wildmenu
+set wildmode=full
+
+" 修改保存的历史命令的条数（默认为20）
+set history=200
+
+" ============== 快速进入命令模式==============
+map ; :
+noremap ;; ;  "使用f<char>后使用;;可以正常跳转到下一个
+
+" ================== NERDTree =================
 let g:NERDTreeMapOpenSplit = 's'
 let g:NERDTreeMapOpenVSplit = 'v'
 nmap <leader>n :NERDTreeToggle<CR>
 let NERDTreeWinSize=30
-let NERDTreeIgnore=['\.pyc', '\.swp', '\~']
+let NERDTreeIgnore=['\.pyc', '\.swp', '\~', '__pycache__']
 " 是否自动开启nerdtree
 " let g:nerdtree_tabs_open_on_console_startup=1
 " let g:nerdtree_tabs_open_on_gui_startup=1
-"close vim if the only window left open is a NERDTree
+" close vim if the only window left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end  
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
 
-"==================== YCM=====================
+" ==================== YCM=====================
 let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+let g:ycm_server_python_interpreter = '/usr/bin/python3'
+let g:ycm_python_binary_path = 'python'
 
 let g:ycm_key_list_select_completion = ['<Down>']
 let g:ycm_key_list_previous_completion = ['<Up>']
@@ -97,36 +137,43 @@ if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_
 	let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
     endif
 
-"================== vim-commentary =================
-"为python和shell等添加注释
+" ================== vim-commentary =================
+" 为python和shell等添加注释
 autocmd FileType python,shell,coffee set commentstring=#\ %s
-"修改注释风格
+" 修改注释风格
 autocmd FileType java,c,cpp set commentstring=//\ %s
 
-"==================== ctrlp =====================
-"设置搜索时忽略的文件
+" ==================== ctrlp =====================
+" 设置搜索时忽略的文件
 let g:ctrlp_custom_ignore = {
     \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
     \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
     \ }
+nmap <C-b> :CtrlPBuffer<CR>
 let g:ctrlp_max_files=0
 
-"==================== PEP8 =====================
+" ==================== SimpylFold =====================
+" 折叠代码时不对注释进行折叠
+" let g:SimpylFold_docstring_preview = 1
+
+" ==================== PEP8 =====================
+" 需要在python环境中安装flake8( pip install flske8 )
 let g:syntastic_python_checkers=['flake8']
 " let g:syntastic_python_checker_args='--ignore=W501,E225'
 " let syntastic_python_checker_args='--ignore=E501,E225'
-let g:syntastic_python_flake8_post_args='--ignore=E501,E128,E225'
+" let g:syntastic_python_flake8_post_args='--ignore=E501,E128,E225'
+let g:syntastic_python_flake8_args="--max-line-length=120"
 let g:syntastic_check_on_open=1                                                                                                                                                                         
 let g:syntastic_check_on_wq=0                                                                                                                                                                           
 let g:syntastic_enable_highlighting=1     
 
-"=================== 窗口切换 ==================
+" =================== 窗口切换 ==================
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
-"=================== 搜索相关 ==================
+" =================== 搜索相关 ==================
 " 进入搜索Use sane regexes"                                                                                                                                                                           
 nnoremap / /\v
 vnoremap / /\v
@@ -139,20 +186,21 @@ set incsearch
 " 搜索时忽略大小写
 set ignorecase
 
-"================== 状态栏配置 =================
-
+" ================== 状态栏配置 =================
 " airline 
+" let g:airline_theme = 'ayu_mirage'
+let g:airline#extensions#tabline#enabled = 1
 
 if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
+
 let g:airline_left_sep = '▶'
 let g:airline_left_alt_sep = '❯'
 let g:airline_right_sep = '◀'
 let g:airline_right_alt_sep = '❮'
 let g:airline_symbols.linenr = '¶'
 let g:airline_symbols.branch = '⎇'
-
 
 " solarized {{{
 let g:solarized_termtrans=1
