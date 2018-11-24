@@ -28,26 +28,52 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 " 配色
 Plugin 'altercation/vim-colors-solarized'
-" capslock
-" Plugin 'https://github.com/tpope/vim-capslock.git'
-" Plugin 'suxpert/vimcaps'
+Plugin 'jnurmine/Zenburn'
+Plugin 'morhetz/gruvbox'
+" Bundle 'hdima/python-syntax'
+Bundle 'luochen1990/rainbow'
 " 代码折叠
 " Plugin 'tmhedberg/SimpylFold'
+" surround
+Plugin 'tpope/vim-surround'
+" golang 支持
+Plugin 'fatih/vim-go'
+" 缩进线
+Plugin 'Yggdroot/indentLine'
+" Markdown 支持
+" Plugin 'godlygeek/tabular'
+" Plugin 'plasticboy/vim-markdown'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-" #################### 基础设置 ###################### 
-set encoding=utf-8 
-let mapleader = ','          " 修改leader键
-let g:mapleader = ','
+" #################### 基础设置 ######################
+set encoding=utf-8
+set autowrite
+" let mapleader = ','          " 修改leader键
+" let g:mapleader = ','
 
-set expandtab smarttab shiftwidth=4 tabstop=4
-set number                   " 显示行号
+set cursorline
+hi CursorLine   cterm=NONE ctermbg=darkred ctermfg=white guibg=darkred guifg=white
+" set cursorcolumn
+" hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white guibg=darkred guifg=white
+
+" 根据不同的文件设置不同的tab
+autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+autocmd Filetype html setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+autocmd Filetype ruby setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+autocmd Filetype javascript setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+" autocmd Filetype html setlocal ts=2 sts=2 sw=2
+" autocmd Filetype ruby setlocal ts=2 sts=2 sw=2
+" autocmd Filetype javascript setlocal ts=4 sts=4 sw=4
+
+set number relativenumber
+
+" set relativenumber           " 显示相对行号
 set wrap                     " 取消换行
-nnoremap U <C-r>
-noremap H ^
-noremap L $
+" nnoremap U <C-r>
+" noremap H ^
+" noremap L $
 nnoremap <leader>o oimport ipdb; ipdb.sset_trace()<Esc>
 vmap <C-c> "+y               " 从vim复制到系统
 
@@ -73,11 +99,11 @@ set wildmenu
 set wildmode=full
 
 " 修改保存的历史命令的条数（默认为20）
-set history=200
+set history=100
 
 " ============== 快速进入命令模式==============
 map ; :
-noremap ;; ;  "使用f<char>后使用;;可以正常跳转到下一个
+noremap ;; ;
 
 " ================== NERDTree =================
 let g:NERDTreeMapOpenSplit = 's'
@@ -89,7 +115,7 @@ let NERDTreeIgnore=['\.pyc', '\.swp', '\~', '__pycache__']
 " let g:nerdtree_tabs_open_on_console_startup=1
 " let g:nerdtree_tabs_open_on_gui_startup=1
 " close vim if the only window left open is a NERDTree
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end  
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end
 let g:NERDTreeIndicatorMapCustom = {
     \ "Modified"  : "✹",
     \ "Staged"    : "✚",
@@ -104,9 +130,26 @@ let g:NERDTreeIndicatorMapCustom = {
     \ }
 
 " ==================== YCM=====================
-let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+let g:ycm_path_to_python_interpreter = '/usr/bin/python3'
 let g:ycm_server_python_interpreter = '/usr/bin/python3'
-let g:ycm_python_binary_path = 'python'
+
+" Point YCM to the Pipenv created virtualenv, if possible
+" At first, get the output of 'pipenv --venv' command.
+let pipenv_venv_path = system('pipenv --venv')
+" The above system() call produces a non zero exit code whenever
+" a proper virtual environment has not been found.
+" So, second, we only point YCM to the virtual environment when
+" the call to 'pipenv --venv' was successful.
+" Remember, that 'pipenv --venv' only points to the root directory
+" of the virtual environment, so we have to append a full path to
+" the python executable.
+if shell_error == 0
+  let venv_path = substitute(pipenv_venv_path, '\n', '', '')
+  " let g:ycm_python_binary_path = venv_path . '/bin/python'
+  let g:ycm_python_binary_path = 'python'
+else
+  let g:ycm_python_binary_path = 'python'
+endif
 
 let g:ycm_key_list_select_completion = ['<Down>']
 let g:ycm_key_list_previous_completion = ['<Up>']
@@ -121,7 +164,7 @@ let g:ycm_seed_identifiers_with_syntax=1
 let g:ycm_key_list_stop_completion = ['<CR>']
 
 " 跳转到定义处, 分屏打开
-let g:ycm_goto_buffer_command = 'horizontal-split'
+" let g:ycm_goto_buffer_command = 'horizontal-split'
 let g:ycm_register_as_syntastic_checker = 0
 " nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
@@ -135,7 +178,7 @@ endif
 " new version
 if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"))
 	let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
-    endif
+endif
 
 " ================== vim-commentary =================
 " 为python和shell等添加注释
@@ -149,23 +192,52 @@ let g:ctrlp_custom_ignore = {
     \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
     \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
     \ }
-nmap <C-b> :CtrlPBuffer<CR>
+" nmap <C-b> :CtrlPBuffer<CR>
 let g:ctrlp_max_files=0
+let g:ctrlp_working_path_mode = 'a'
 
 " ==================== SimpylFold =====================
 " 折叠代码时不对注释进行折叠
 " let g:SimpylFold_docstring_preview = 1
+" let g:SimpylFold_fold_docstring = 0
+" let g:SimpylFold_fold_import = 0
+nnoremap <space> za
 
 " ==================== PEP8 =====================
-" 需要在python环境中安装flake8( pip install flske8 )
+" 需要在python环境中安装flake8( pip install flake8 )
 let g:syntastic_python_checkers=['flake8']
 " let g:syntastic_python_checker_args='--ignore=W501,E225'
-" let syntastic_python_checker_args='--ignore=E501,E225'
+let syntastic_python_checker_args='--ignore=E501,E225'
 " let g:syntastic_python_flake8_post_args='--ignore=E501,E128,E225'
 let g:syntastic_python_flake8_args="--max-line-length=120"
-let g:syntastic_check_on_open=1                                                                                                                                                                         
-let g:syntastic_check_on_wq=0                                                                                                                                                                           
-let g:syntastic_enable_highlighting=1     
+let g:syntastic_check_on_open=1
+let g:syntastic_check_on_wq=0
+let g:syntastic_enable_highlighting=1
+
+" =================== rainbow ==================
+let g:rainbow_active = 1  " 彩虹括号
+let g:rainbow_conf = {
+	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+	\	'operators': '_,_',
+	\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+	\	'separately': {
+	\		'*': {},
+	\		'tex': {
+	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/'],
+	\		},
+	\		'lisp': {
+	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
+	\		},
+	\		'vim': {
+	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
+	\		},
+	\		'html': {
+	\			'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+	\		},
+	\		'css': 0,
+	\	}
+	\}
 
 " =================== 窗口切换 ==================
 nnoremap <C-J> <C-W><C-J>
@@ -174,9 +246,9 @@ nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
 " =================== 搜索相关 ==================
-" 进入搜索Use sane regexes"                                                                                                                                                                           
-nnoremap / /\v
-vnoremap / /\v
+" 进入搜索Use sane regexes"
+" nnoremap / /\v
+" vnoremap / /\v
 
 " 设置文内智能搜索提示
 " 高亮search命中的文本
@@ -187,27 +259,110 @@ set incsearch
 set ignorecase
 
 " ================== 状态栏配置 =================
-" airline 
-" let g:airline_theme = 'ayu_mirage'
+" airline
 let g:airline#extensions#tabline#enabled = 1
 
 if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
 
-let g:airline_left_sep = '▶'
+let g:airline_left_sep = '▶ '
 let g:airline_left_alt_sep = '❯'
 let g:airline_right_sep = '◀'
 let g:airline_right_alt_sep = '❮'
 let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.branch = '⎇ '
 
 " solarized {{{
-let g:solarized_termtrans=1
-let g:solarized_contrast="normal"
-let g:solarized_visibility="normal"
+" let g:solarized_termtrans=1
+" let g:solarized_contrast="normal"
+" let g:solarized_visibility="normal"
+
+syntax on  " 代码高亮
+let python_highlight_all = 1  " 加强python高亮
+colorscheme gruvbox
+" colorscheme solarized
+" colorscheme zenburn
+set background=dark
+let g:gruvbox_termcolors=256
 " let g:solarized_termcolors=256
 " }}}
-syntax enable
-set background=dark
-colorscheme solarized
+" if has('gui_running')
+"   set background=dark
+"   colorscheme solarized
+" else
+  " colorscheme zenburn
+" endif
+
+" ================== vim-go =================
+" vim-go
+
+map <C-n> :cnext<CR>
+map <C-m> :cprevious<CR>
+nnoremap <leader>a :cclose<CR>
+
+" let g:go_fmt_command = "goimports"
+" let g:go_autodetect_gopath = 1
+let g:go_list_type = "quickfix"
+
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_generate_tags = 1
+
+" " Open :GoDeclsDir with ctrl-g
+" nmap <C-g> :GoDeclsDir<cr>
+" imap <C-g> <esc>:<C-u>GoDeclsDir<cr>
+
+
+augroup go
+  autocmd!
+
+  " Show by default 4 spaces for a tab
+  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+  " :GoBuild and :GoTestCompile
+  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+
+  " :GoTest
+  autocmd FileType go nmap <leader>t  <Plug>(go-test)
+
+  " :GoRun
+  autocmd FileType go nmap <leader>r  <Plug>(go-run)
+
+  " :GoDoc
+  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
+
+  " :GoCoverageToggle
+  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
+
+  " :GoInfo
+  autocmd FileType go nmap <Leader>i <Plug>(go-info)
+
+  " :GoMetaLinter
+  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
+
+  " :GoDef but opens in a vertical split
+  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
+  " :GoDef but opens in a horizontal split
+  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
+
+  " :GoAlternate  commands :A, :AV, :AS and :AT
+  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+augroup END
+
+" build_go_files is a custom function that builds or compiles the test file.
+" It calls :GoBuild if its a Go file, or :GoTestCompile if it's a test file
+function! s:build_go_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+_test\.go$'
+    call go#test#Test(0, 1)
+  elseif l:file =~# '^\f\+\.go$'
+    call go#cmd#Build(0)
+  endif
+endfunction
